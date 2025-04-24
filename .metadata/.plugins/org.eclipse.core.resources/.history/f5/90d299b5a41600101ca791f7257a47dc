@@ -1,0 +1,102 @@
+<%@page import="db.DBconnection"%>
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.Statement"%>
+<%@page import="java.sql.Connection"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%
+Connection conn = DBconnection.getConnection();
+Statement stmt1 =  conn.createStatement();
+Statement stmt2 =  conn.createStatement();
+Statement stmt3 =  conn.createStatement();
+ResultSet rs = stmt1.executeQuery("SELECT t.teacher_cd, t.class_nm, t.teacher_nm, to_char(SUM(c.class_price), 'L999,999') FROM tbl_class_202305 c, tbl_teacher_202305 t WHERE t.teacher_cd = c.teacher_cd GROUP BY t.teacher_cd, t.class_nm, t.teacher_nm");
+ResultSet rs2 = stmt2.executeQuery("SELECT * FROM tbl_member_202305");
+ResultSet rs3 = stmt3.executeQuery("SELECT * FROM tbl_teacher_202305");
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+<body>
+<header>
+		골프 연습장 회원관리 프로그램 ver 1.0
+	</header>
+	<nav>
+		<a href="./teacher.jsp">강사조회</a>
+		<a href="./addClass.jsp">수강신청</a>
+		<a href="./member.jsp">회원정보조회</a>
+		<a href="./teacherMoney.jsp">강사매출현황</a>
+		<a href="./index.jsp">홈으로</a>
+	</nav>
+	<main>
+	<p class="title">수강신청</p>
+	<form action="">
+		<table>
+			<tr>
+				<td class="sub">수강월</td>
+				<td class="sub"><input name="date"><p></p>2022년03월 예)202203</td>
+			</tr>
+			<tr>
+				<td class="sub">회원명</td>
+				<td class="sub">
+					<select name="mem_no" id="mem_nm">
+					<option value="">회원명</option>
+					<%while(rs2.next()){%>
+						<option value="<%=rs2.getString("mem_no")%>"><%=rs2.getString("mem_nm")%></option>
+					<%}%>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td class="sub">회원번호</td>
+				<td class="sub"><input id="mem_no" readonly />예)10001</td>
+			</tr>
+			<tr>
+				<td class="sub">강의장소</td>
+				<td class="sub">
+					<select name="mem_no" id="mem_nm">
+						<option value="서울본원">서울본원</option>
+						<option value="성남분원">성남분원</option>
+						<option value="대전본원">대전본원</option>
+						<option value="부산본원">부산본원</option>
+						<option value="대구본원">대구본원</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td class="sub">회원명</td>
+				<td class="sub">
+					<select name="class_price" id="class_nm">
+					<option value="">강의신청</option>
+					<%while(rs3.next()){%>
+						<option value="<%=rs3.getString("class_price")%>"><%=rs3.getString("class_nm")%></option>
+					<%}%>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td class="sub">수강료</td>
+				<td class="sub"><input id="class_price" readonly />원</td>
+			</tr>
+		</table>
+	</form>
+	</main>
+	<footer>
+	HRDKOREA Copyright@2015 All rights reserved. Human Resource Development Service of Korea
+	</footer>
+	<script>
+		document.querySelector("#mem_nm").addEventListener("change", (e) => {
+			document.querySelector("#mem_no").value = e.target.value;
+		});
+		document.querySelector("#class_nm").addEventListener("change", (e) => {
+			let price = e.target.value;
+			console.log(document.querySelector("#mem_no").value);
+			price = document.querySelector("#mem_no").value+"".subString(0, 1) == "2" ? price / 2 : price;
+			document.querySelector("#class_price").value = price; 
+		});
+	</script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+CREATE TABLE tbl_teacher_202305 (
+	teacher_cd varchar2(3) NOT NULL PRIMARY KEY,
+	teacher_nm varchar2(15),
+	class_nm varchar2(20),
+	class_price NUMBER(8),
+	regist_date varchar2(8)	
+);
+
+
+INSERT INTO tbl_teacher_202305 VALUES ('101', '이초급', '초급반', 100000, '20220101');
+INSERT INTO tbl_teacher_202305 VALUES ('102', '김중급', '중급반', 200000, '20220102');
+INSERT INTO tbl_teacher_202305 VALUES ('103', '박고급', '고급반', 300000, '20220103');
+INSERT INTO tbl_teacher_202305 VALUES ('104', '정심화', '심화반', 400000, '20220104');
+
+CREATE TABLE tbl_member_202305 (
+	mem_no varchar2(5) PRIMARY KEY,
+	mem_nm varchar2(15),
+	phone varchar2(11),
+	address varchar2(50)
+);
+
+INSERT INTO tbl_member_202305 VALUES ('10001', '홍길동', '01011112222', '서울시 강남구');
+INSERT INTO tbl_member_202305 VALUES ('10002', '장발장', '01022223333', '성남시 분당구');
+INSERT INTO tbl_member_202305 VALUES ('10003', '임꺽정', '01033334444', '대전시 유성구');
+INSERT INTO tbl_member_202305 VALUES ('20001', '성춘향', '01044445555', '부산시 서구');
+INSERT INTO tbl_member_202305 VALUES ('20002', '이몽룡', '01055556666', '대구시 북구');
+
+
+CREATE TABLE tbl_class_202305 (
+	class_ym varchar2(6),
+	mem_no varchar2(5),
+	class_loc varchar2(15),
+	class_price number(8),
+	teacher_cd varchar2(3),
+	PRIMARY KEY(class_ym, mem_no)
+);
+
+INSERT INTO tbl_class_202305 VALUES ('202203', '10001', '서울본원', 100000, '101');
+INSERT INTO tbl_class_202305 VALUES ('202203', '10002', '성남분원', 100000, '101');
+INSERT INTO tbl_class_202305 VALUES ('202203', '10003', '대전분원', 200000, '102');
+INSERT INTO tbl_class_202305 VALUES ('202203', '20001', '부산분원', 150000, '103');
+INSERT INTO tbl_class_202305 VALUES ('202203', '20002', '대구분원', 200000, '104');
+ 
+
+SELECT * FROM tbl_teacher_202305;
+
+select teacher_cd, teacher_nm, class_nm, to_char(class_price, 'L999,999'), substr(regist_date, 1, 4) || '년' || substr(regist_date, 5, 2) || '월' || substr(regist_date, 7, 2) || '일' from tbl_teacher_202305
+
+SELECT 
+	substr(c.class_ym, 1, 4) || '년' || substr(c.class_ym, 5, 2) || '월',
+	m.mem_no, m.mem_nm, t.class_nm, c.class_loc, to_char(c.class_price, 'L999,999'),
+	CASE WHEN substr(m.mem_no, 1, 1) = 	'1' THEN '일반'
+	WHEN substr(m.mem_no, 1, 1) = '2' THEN 'VIP' END
+	AS rank	
+FROM 
+	tbl_member_202305 m, tbl_class_202305 c, tbl_teacher_202305 t 
+	WHERE
+	m.mem_no = c.mem_no AND t.teacher_cd = c.teacher_cd;
+
+	
+SELECT 
+	t.teacher_cd,
+	t.class_nm,
+	t.teacher_nm,
+	to_char(SUM(c.class_price), 'L999,999')
+FROM 
+	tbl_class_202305 c, tbl_teacher_202305 t 
+	WHERE
+	t.teacher_cd = c.teacher_cd
+	GROUP BY
+	t.teacher_cd,
+	t.class_nm,
+	t.teacher_nm
+	
+	
+	SELECT substr(c.class_ym, 1, 4) || '년' || substr(c.class_ym, 5, 2) || '월', m.mem_no, m.mem_nm, t.class_nm, c.class_loc, to_char(c.class_price, 'L999,999'), CASE WHEN substr(m.mem_no, 1, 1) = 	'1' THEN '일반' WHEN substr(m.mem_no, 1, 1) = '2' THEN 'VIP' END AS rank FROM tbl_member_202305 m, tbl_class_202305 c, tbl_teacher_202305 t WHERE m.mem_no = c.mem_no AND t.teacher_cd = c.teacher_cd ORDER BY c.class_ym DESC, m.mem_no ASC
+	
+SELECT * FROM tbl_member_202305;

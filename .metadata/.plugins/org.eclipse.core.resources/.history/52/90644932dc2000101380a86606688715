@@ -1,0 +1,82 @@
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.PreparedStatement"%>
+<%@page import="java.sql.Connection"%>
+<%@page import="java.sql.DriverManager"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%
+	Class.forName("oracle.jdbc.OracleDriver");
+	String no = request.getParameter("no");
+	Connection con = DriverManager.getConnection("jdbc:oracle:thin:@//localhost:1521/xe", "system", "1234");
+	
+	String sql = "SELECT j.pname, j.jumin, CASE WHEN substr(j.jumin, 8, 1) = '1' THEN '남' WHEN substr(j.jumin, 8, 1) = '2' THEN '여' end, j.tel, substr(v.resvdate, 1, 4) || '년' || substr(v.resvdate, 5, 2) || '월' || substr(v.resvdate, 7, 2) || '일', substr(v.resvtime, 1, 2) || ':' || substr(v.resvtime, 3, 2), h.hospname, h.hosptel, h.hospaddr, v.vcode FROM tbl_vaccresv_202108 v, tbl_hosp_202108 h, tbl_jumin_201808 j WHERE v.jumin = j.jumin AND v.hospcode = h.hospcode AND v.resvno = ?";
+	PreparedStatement s = con.prepareStatement(sql);
+	s.setString(1, no);
+	
+	ResultSet rs = s.executeQuery();
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+* {padding:0; margin: 0; text-decoration: none; color: inherit;}
+.c { display: flex; justify-content: center; align-items: center;}
+td{ border: 1px solid black; padding: .5em 1em;}
+</style>
+</head>
+<body>
+<header class="c" style="background-color: gray; color: #000; font-weight: bold; font-size: 50px; height: 100px;">(과정평가형 정보처리산업기사) 백신접종예약 프로그램 ver 2021-08</header>
+<nav style="display: flex; padding: 10px; gap: 20px; background: #aaa; color: black; font-weight: bold; height:30px;">
+<a href="insert.jsp">백신접종예약</a>
+<a href="select.jsp">접종예약조회</a>
+<a href="view.jsp">접종인원통계</a>
+<a href="index.jsp">홈으로</a>
+</nav>
+<section style="min-height: calc(100vh - 200px); display: flex; flex-direction: column; align-items: center;">
+<h1 class="c" style="padding: 50px;">예약번호: <%=no %> 의 접종예약조회</h1>
+<%
+ if(rs.next()) {
+%>
+<form action="selectDetail.jsp">
+<table>
+<tr>
+<td>접종예약조회</td>
+<td>
+	<input id="no" name="no"/>예) 20210001
+</td>
+</tr>
+<tr>
+<td colspan="2" style="display: flex; justify-content: center;">
+<button>예약조회</button>
+<button id="reset" type="reset">홈으로</button>
+</td>
+</tr>
+</table>
+</form>
+<% } else { %>
+<form action="select.jsp">
+<h1 class="c" style="font-size: 100px; padding: 50px;">접종예약정보가 존재하지 않습니다!</h1>
+<button>돌아가기</button>
+</form>
+<% } %>
+</section>
+<footer class="c" style="background-color: black; color: #fff; font-weight: bold; font-size: 30px; height: 50px;">HRDKIREA Copyright @ 2021 All rights reserved. Human Resources Development Service of Korea</footer>
+<script>
+const $ = (s) => document.querySelector(s);
+$("form").addEventListener("submit", (e)=> {
+	e.preventDefault();
+	if($("#no").value == "") {
+		alert("접종예약번호가 입력되지 않았습니다.");
+		e.preventDefault();
+		$("#no").focus();
+	}
+	
+});
+$("#reset").addEventListener("click", ()=> {
+	location.href="index.jsp";
+});
+</script>
+</body>
+</html>

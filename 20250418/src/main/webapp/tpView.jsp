@@ -1,0 +1,68 @@
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.Statement"%>
+<%@page import="java.sql.Connection"%>
+<%@page import="db.DB"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+*{
+padding: 0; margin: 0; text-decoration: none; 
+}
+	.c {
+		display: flex; justify-content: center; align-items: center;
+	}
+	td {
+	border: 1px solid black;
+	}
+</style>
+</head>
+<body>
+<header style="height: 150px; background: gray; color: #fff; font-size: 50px;" class="c">(과정평가형 2020-05) 지역구의원투표 프로그램 ver 1.0</header>
+<nav style="height: 50px; gap:10px; display: flex; align-items: center; background: black; color: #fff; font-size: 16px;">
+<a style="color: #fff;" href="hb.jsp">후보조회</a>
+<a style="color: #fff;" href="tp.jsp">투표하기</a>
+<a style="color: #fff;" href="tpView.jsp">투표검수조회</a>
+<a style="color: #fff;" href="hbRank.jsp">후보자등수</a>
+<a style="color: #fff;" href="index.jsp">홈으로</a>
+
+</nav>
+<main style="min-height: calc(100vh - 300px); display: flex; flex-direction: column; align-items: center;">
+<h1 style="padding: 50px;">투표검수조회</h1>
+<table>
+	<tr>
+		<td>투표자명</td>
+		<td>생년월일</td>
+		<td>나이</td>
+		<td>성별</td>
+		<td>투표한 후보자</td>
+		<td>투표시간</td>
+		<td>투표장소</td>
+		<td>유권자 확인</td>
+	</tr>
+	<%
+	Connection c = DB.get();
+	Statement s = c.createStatement();
+	ResultSet rs = s.executeQuery("SELECT v.V_NAME, '19'||substr(v.V_JUMIN, 0, 2)||'월'||substr(v.V_JUMIN, 3, 2)||'월'||substr(v.V_JUMIN, 5, 2)||'일생', '만 '||TRUNC(MONTHS_BETWEEN(TRUNC(SYSDATE), TO_DATE('19'||substr(v.V_JUMIN, 0, 6),'YYYYMMDD')) / 12)||'세', CASE WHEN substr(v.V_JUMIN, 7, 1) = '2' THEN '여' WHEN substr(v.V_JUMIN, 7, 1) = '1' THEN '남' END, m.V_NAME, substr(v.V_TIME, 0, 2)||':'||substr(v.V_TIME, 3, 2), v.V_AREA, CASE WHEN v.V_CONFIRM = 'Y' THEN '확인' WHEN v.V_CONFIRM = 'N' THEN '미확인' END FROM TBL_MEMBER_202005 m, TBL_VOTE_202005 v WHERE m.M_NO = v.M_NO AND v.V_AREA = '제1투표장'");
+	while(rs.next()) {
+	%>
+	<tr>
+		<td><%=rs.getString(1) %></td>
+		<td><%=rs.getString(2) %></td>
+		<td><%=rs.getString(3) %></td>
+		<td><%=rs.getString(4) %></td>
+		<td><%=rs.getString(5) %></td>
+		<td><%=rs.getString(6) %></td>
+		<td><%=rs.getString(7) %></td>
+		<td><%=rs.getString(8) %></td>
+	</tr>
+	<% } %>
+</table>
+</main>
+<footer style="height: 100px; background: gray; color: #fff; font-size: 20px;" class="c">HRDKOREA Copyrightⓒ2020 All rights reserved. Human Resource Development Service of Korea</footer>
+</body>
+</html>

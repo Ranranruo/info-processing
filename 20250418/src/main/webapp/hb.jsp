@@ -1,0 +1,67 @@
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.Statement"%>
+<%@page import="java.sql.Connection"%>
+<%@page import="db.DB"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+*{
+padding: 0; margin: 0; text-decoration: none; 
+}
+	.c {
+		display: flex; justify-content: center; align-items: center;
+	}
+	td {
+	border: 1px solid black;
+	}
+</style>
+</head>
+<body>
+<header style="height: 150px; background: gray; color: #fff; font-size: 50px;" class="c">(과정평가형 2020-05) 지역구의원투표 프로그램 ver 1.0</header>
+<nav style="height: 50px; gap:10px; display: flex; align-items: center; background: black; color: #fff; font-size: 16px;">
+<a style="color: #fff;" href="hb.jsp">후보조회</a>
+<a style="color: #fff;" href="tp.jsp">투표하기</a>
+<a style="color: #fff;" href="tpView.jsp">투표검수조회</a>
+<a style="color: #fff;" href="hbRank.jsp">후보자등수</a>
+<a style="color: #fff;" href="index.jsp">홈으로</a>
+
+</nav>
+<main style="min-height: calc(100vh - 300px); display: flex; flex-direction: column; align-items: center;">
+<h1 style="padding: 50px;">후보조회</h1>
+<table>
+	<tr>
+		<td>후보번호</td>
+		<td>성명</td>
+		<td>소속정당</td>
+		<td>학력</td>
+		<td>주민번호</td>
+		<td>지역구</td>
+		<td>대표전화</td>
+	</tr>
+	<%
+	Connection c = DB.get();
+	Statement s = c.createStatement();
+	ResultSet rs = s.executeQuery("SELECT m.M_NO, m.V_NAME, p.P_NAME, CASE WHEN m.V_TIME = '1' THEN '고졸' WHEN m.V_TIME = '2' THEN '학사' WHEN m.V_TIME = '3' THEN '석사' WHEN m.V_TIME = '4' THEN '박사' END, m.V_AREA, m.V_CONFIRM, substr(p.P_TEL1, 0, 2) || '-'|| p.P_TEL2 || '-' || p.P_TEL3 FROM TBL_MEMBER_202005 m, TBL_PARTY_202005 p WHERE m.P_CODE = p.P_CODE");
+	while(rs.next()) {
+	%>
+	<tr>
+		<td><%=rs.getString(1) %></td>
+		<td><%=rs.getString(2) %></td>
+		<td><%=rs.getString(3) %></td>
+		<td><%=rs.getString(4) %></td>
+		<td><%=rs.getString(5) %></td>
+		<td><%=rs.getString(6) %></td>
+		<td><%=rs.getString(7) %></td>
+
+	</tr>
+	<% } %>
+</table>
+</main>
+<footer style="height: 100px; background: gray; color: #fff; font-size: 20px;" class="c">HRDKOREA Copyrightⓒ2020 All rights reserved. Human Resource Development Service of Korea</footer>
+</body>
+</html>

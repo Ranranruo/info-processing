@@ -1,0 +1,29 @@
+<%@page import="java.sql.PreparedStatement"%>
+<%@page import="java.sql.Connection"%>
+<%@page import="db.DB"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<%
+
+Connection c = DB.get();
+String sql = "INSERT INTO TBL_VOTE_202005 VALUES (?, ?, ?, ?, ?, ?)";
+PreparedStatement s = c.prepareStatement(sql);
+s.setString(1, request.getParameter("jumin"));
+s.setString(1, request.getParameter("name"));
+s.setString(1, request.getParameter("no"));
+s.setString(1, request.getParameter("time"));
+s.setString(1, request.getParameter("loc"));
+s.setString(1, request.getParameter("yn"));
+%>
+<script>
+location.href="index.jsp"
+</script>
+</body>
+</html>
